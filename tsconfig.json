@@ -1,21 +1,14 @@
 {
   "compilerOptions": {
-    "outDir": "dist",              // Directorio de salida
-    "rootDir": ".",                // Directorio raíz donde se encuentran los archivos fuente
-    "module": "NodeNext",          // Utiliza NodeNext para módulos
-    "target": "ES2020",            // Define el target de ECMAScript
-    "moduleResolution": "NodeNext", // Asegura que los módulos se resuelvan de acuerdo con las reglas de NodeNext
-    "strict": true,                // Habilita las comprobaciones estrictas de TypeScript
-    "types": ["jest"],             // Define los tipos para pruebas con Jest
-    "allowJs": true,               // Permite la mezcla de archivos .js y .ts
-    "esModuleInterop": true,       // Habilita la interoperabilidad con módulos ES
-    "resolveJsonModule": true      // Permite importar archivos JSON
+    "types": ["jest"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "target": "ES2022",
+    "strict": true,
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*",                    // Asegura que todos los archivos TypeScript en src estén incluidos
-    "tests/**/*"                   // Incluye los archivos de prueba
-  ],
-  "exclude": [
-    "node_modules"                 // Excluye node_modules
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "tests"]
 }
