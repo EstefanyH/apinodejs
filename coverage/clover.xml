@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1742193375895" clover="3.2.0">
+  <project timestamp="1742193375895" name="All files">
+    <metrics statements="25" coveredstatements="12" conditionals="14" coveredconditionals="2" methods="3" coveredmethods="2" elements="42" coveredelements="16" complexity="0" loc="25" ncloc="25" packages="2" files="2" classes="2"/>
+    <package name="application.usecases">
+      <metrics statements="10" coveredstatements="10" conditionals="4" coveredconditionals="2" methods="2" coveredmethods="2"/>
+      <file name="fetch_fusion_data.js" path="/Users/valeria/Documents/App's/api-node/src/application/usecases/fetch_fusion_data.js">
+        <metrics statements="10" coveredstatements="10" conditionals="4" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="infrastructure.services">
+      <metrics statements="15" coveredstatements="2" conditionals="10" coveredconditionals="0" methods="1" coveredmethods="0"/>
+      <file name="weather_services.js" path="/Users/valeria/Documents/App's/api-node/src/infrastructure/services/weather_services.js">
+        <metrics statements="15" coveredstatements="2" conditionals="10" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="36" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="41" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="42" count="0" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
