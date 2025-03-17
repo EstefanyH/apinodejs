@@ -19,32 +19,29 @@ functions:
   fusionados:
     handler: src/handler.fusionados
     events:
-      - httpApi:
+      - http:
           path: /fusionados
           method: get
 
   almacenar:
     handler: src/handler.almacenar
     events:
-      - httpApi:
+      - http:
           path: /almacenar
           method: post
 
   historial:
     handler: src/handler.historial
     events:
-      - httpApi:
+      - http:
           path: /historial
           method: get
 
   swagger:
-    handler: src/handlers.swaggerHandler
+    handler: src/handler.swaggerUI
     events:
-      - httpApi:
-          path: /swagger
-          method: get
-      - httpApi:
-          path: /swagger.json
+      - http:
+          path: api-docs
           method: get
 
 resources:

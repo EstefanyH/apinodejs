@@ -13,18 +13,6 @@ export class HistoryController {
         this.getHistory = new HistoryData(this.dbInstance); // ✅ Pasar instancia de DB
     }
 
-    /**
-     * @swagger
-     * /historial:
-     *   get:
-     *     summary: Obtener historial
-     *     description: Retorna la lista de historial desde DynamoDB.
-     *     responses:
-     *       200:
-     *         description: Lista obtenida correctamente
-     *       500:
-     *         description: Error interno del servidor
-     */
     async historial(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
         try {
             const data = await this.getHistory.execute(tbName);
