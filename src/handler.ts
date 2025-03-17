@@ -27,3 +27,13 @@ export const almacenar = async (event: APIGatewayEvent): Promise<APIGatewayProxy
 export const historial = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   return historyController.historial(event);
 };
+
+export const swaggerHandler = async (): Promise<APIGatewayProxyResult> => {
+  return {
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: "Swagger UI available at /swagger",
+    }),
+  };
+};

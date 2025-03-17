@@ -14,9 +14,6 @@ provider:
         - dynamodb:PutItem
         - dynamodb:GetItem
       Resource: "arn:aws:dynamodb:us-west-2:123456789012:table/FusionadosData"
-    # ✅ Habilitar ESBuild nativo
-  build:
-    esbuild: true
 
 functions:
   fusionados:
@@ -40,6 +37,16 @@ functions:
           path: /historial
           method: get
 
+  swagger:
+    handler: src/handlers.swaggerHandler
+    events:
+      - httpApi:
+          path: /swagger
+          method: get
+      - httpApi:
+          path: /swagger.json
+          method: get
+
 resources:
   Resources:
     FusionadosTable:
@@ -56,11 +63,11 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TimeToLiveSpecification:
-          AttributeName: expiresAt  # ⏳ Configurar TTL en DynamoDB
+          AttributeName: expiresAt
           Enabled: true
-        
 
 plugins:
+  - serverless-auto-swagger  # ✅ Plugin Swagger
   - serverless-dynamodb-local
   - serverless-offline
 
@@ -69,6 +76,13 @@ custom:
     bundle: true
     minify: false
     sourcemap: true
+  autoswagger:
+    title: "API Fusionados"
+    basePath: "/dev"
+    host: "http://localhost:3000"
+    generateSwaggerOnDeploy: true
+    schemes:
+      - http
   serverless-offline:
     httpPort: 3000
     lambdaPort: 3002
