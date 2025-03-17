@@ -1,4 +1,5 @@
-# serverless.yml
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: hache
 service: my-restful-api
 
 provider:
@@ -12,23 +13,23 @@ provider:
       Action:
         - dynamodb:Scan
         - dynamodb:PutItem
-      Resource: "arn:aws:dynamodb:us-east-1:123456789012:table/FusionadosData"
+      Resource: "arn:aws:dynamodb:us-west-2:123456789012:table/FusionadosData" # Corregida la región
 
 functions:
   fusionados:
-    handler: handler.fusionados
+    handler: dist/handler.fusionados  # Asegúrate de que tu código está en src/
     events:
       - http:
           path: fusionados
           method: get
   almacenar:
-    handler: handler.almacenar
+    handler: dist/handler.almacenar
     events:
       - http:
           path: almacenar
           method: post
   historial:
-    handler: handler.historial
+    handler: dist/handler.historial
     events:
       - http:
           path: historial
@@ -48,15 +49,21 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
 
-
 # Agregar plugins
 plugins:
   - serverless-offline
   - serverless-dynamodb-local
 
-# Configurar Serverless Offline
+# Configurar Serverless Offline y ESBuild
 custom:
   serverless-offline:
-    httpPort: 3000  # Cambia el puerto si es necesario
+    httpPort: 3000
     lambdaPort: 3002
-    host: 0.0.0.0  # Escucha en todas las interfaces de red
+    host: 0.0.0.0
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node20
+    platform: node
+    concurrency: 10

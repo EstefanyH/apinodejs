@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { jest } from '@jest/globals';
-import SwapiService from '../../src/infrastructure/services/swapi_services.js';
+import { SwapiService } from '../../src/infrastructure/services/swapi_services';
+
+jest.mock('axios'); // Mockeamos axios para todos los tests
 
 describe('SwapiService', () => {
     beforeEach(() => {
-        jest.restoreAllMocks(); // Restaura todos los mocks para evitar contaminación entre tests
+        jest.restoreAllMocks(); // Restaura los mocks antes de cada test
     });
 
     it('debería obtener los datos de un planeta de SWAPI', async () => {

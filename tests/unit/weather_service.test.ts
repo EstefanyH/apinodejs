@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { jest } from '@jest/globals';
-import WeatherService from '../../src/infrastructure/services/weather_services.js';
+import { WeatherService } from '../../src/infrastructure/services/weather_services';
 
 describe('WeatherService', () => {
     beforeEach(() => {
@@ -13,7 +13,7 @@ describe('WeatherService', () => {
         // Mockeamos axios.get usando jest.spyOn
         const mockGet = jest.spyOn(axios, 'get').mockResolvedValueOnce({
             data: { current: { temp_c: 25, condition: { text: 'Sunny' } } }
-        });
+        } as any); // Se usa `as any` para evitar conflictos de tipo
 
         const service = new WeatherService();
         const data = await service.getWeatherData('London');
@@ -24,8 +24,8 @@ describe('WeatherService', () => {
 
     it('debería manejar un error cuando la ubicación no se encuentra', async () => {
         const mockGet = jest.spyOn(axios, 'get').mockRejectedValueOnce({
-            response: { data: { error: { code: 1006 } } } // Simula error 1006 de la API
-        });
+            response: { data: { error: { code: 1006 } } }
+        } as any);
 
         const service = new WeatherService();
 
