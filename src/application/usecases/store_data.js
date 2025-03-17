@@ -1,6 +1,12 @@
+class StoreData {
+    constructor(db) {
+        this.db = db;
+    }
 
-const GetHistory = async (repository, tableName) => {
-    return await repository.all(tableName);
-};
+    async execute(tableName, data) {
+        await this.db.save(tableName, data);
+        return { message: "Datos almacenados correctamente", data };
+    }
+}
 
-module.exports = GetHistory;
+export default StoreData;

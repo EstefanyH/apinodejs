@@ -1,17 +1,22 @@
-import store from '../../application/usecases/store_data.js';
+import storeModel from '../../application/usecases/store_data.js';
 import db from '../../infrastructure/database/db.js';
 
 const tbName = 'FusionadosData';
 
 class StorageController {
-    static async almacenar(e) {
-        try {
-            const data = JSON.parse(e.body);
-            const storedData = await store(db, tbName, data);
-            return { statusCode: 201, body: JSON.stringify({ message: "Datos almacenados", storedData }) };
-        } catch (xe) {
-            return { statusCode: 500, body: JSON.stringify({ message: "Error al almacenar datos", xe }) };
+    
+    constructor() {
+        this.storeData = new storeModel(db);
+    }
+
+    async almacenar(e) {
+        const body = JSON.parse(e.body);
+        if (!body || Object.keys(body).length === 0) {
+            return { statusCode: 400, body: JSON.stringify({ error: "Datos requeridos" }) };
         }
+
+        const response = await this.storeData.execute(tbName, body);
+        return { statusCode: 201, body: JSON.stringify(response) };
     }
 }
 export default StorageController;

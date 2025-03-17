@@ -1,39 +1,62 @@
 # serverless.yml
-service: my-restful-api
+service: node-api
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: us-east-1
+  region: us-west-2
+  environment:
+    DYNAMODB_TABLE: FusionadosData
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:us-east-1:123456789012:table/FusionadosData"
 
 functions:
-  getUsers:
-    handler: handler.getUsers
+  fusionados:
+    handler: handler.fusionados
     events:
       - http:
-          path: users
+          path: fusionados
           method: get
-  createUser:
-    handler: handler.createUser
+  almacenar:
+    handler: handler.almacenar
     events:
       - http:
-          path: users
+          path: almacenar
           method: post
-  getUser:
-    handler: handler.getUser
+  historial:
+    handler: handler.historial
     events:
       - http:
-          path: users/{id}
+          path: historial
           method: get
-  updateUser:
-    handler: handler.updateUser
-    events:
-      - http:
-          path: users/{id}
-          method: put
-  deleteUser:
-    handler: handler.deleteUser
-    events:
-      - http:
-          path: users/{id}
-          method: delete
+
+resources:
+  Resources:
+    FusionadosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FusionadosData
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+
+# Agregar plugins
+plugins:
+  - serverless-offline
+  - serverless-dynamodb-local
+
+# Configurar Serverless Offline
+custom:
+  serverless-offline:
+    httpPort: 3000  # Cambia el puerto si es necesario
+    lambdaPort: 3002
+    host: 0.0.0.0  # Escucha en todas las interfaces de red

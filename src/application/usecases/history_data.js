@@ -1,8 +1,12 @@
+class HistoryData {
+    constructor(db) {
+        this.db = db;
+    }
 
-const StoreData = async (repository, tableName, data) => {
-    const item = { id: require("uuid").v4(), ...data };
-    await repository.save(tableName, item);
-    return item;
-};
+    async execute(tableName) {
+        const items = await this.db.all(tableName);
+        return items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Orden cronológico
+    }
+}
 
-module.exports = StoreData;
+export default HistoryData;
