@@ -1,14 +1,16 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from 'aws-lambda';
-import HistoryData  from '../../application/usecases/history_data'; //"../../application/usecases/history_data";
+import HistoryData from '../../application/usecases/history_data';
 import { DB } from "../../infrastructure/database/db";
 
 const tbName = "FusionadosData";
 
 export class HistoryController {
     private getHistory: HistoryData;
+    private dbInstance: DB; // ✅ Instancia de DB
 
     constructor() {
-        this.getHistory = new HistoryData(DB);
+        this.dbInstance = new DB(); // ✅ Crear instancia
+        this.getHistory = new HistoryData(this.dbInstance); // ✅ Pasar instancia de DB
     }
 
     async historial(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {

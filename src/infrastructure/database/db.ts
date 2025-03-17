@@ -1,13 +1,18 @@
 import "dotenv/config";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 
-// Definir interfaz genérica para los datos a almacenar
-export interface DynamoDBItem {
-    [key: string]: any;
+// Definir interfaz para la base de datos
+export interface Database {
+    save(tableName: string, data: Record<string, any>): Promise<void>;
+    all(tableName: string): Promise<Record<string, any>[]>;
+    getCache(tableName: string, cacheKey: string): Promise<Record<string, any> | null>;
+    setCache(tableName: string, cacheKey: string, data: any): Promise<void>;
+    deleteCache(tableName: string, cacheKey: string): Promise<void>;
 }
 
-// Configurar el cliente de DynamoDB con credenciales y región
+// Configurar cliente DynamoDB
 const client = new DynamoDBClient({
     region: process.env.AWS_REGION as string,
     credentials: {
@@ -18,27 +23,54 @@ const client = new DynamoDBClient({
 
 const dynamoDB = DynamoDBDocumentClient.from(client);
 
-export class DB {
-    /**
-     * Guarda un ítem en la tabla de DynamoDB.
-     * @param tbName Nombre de la tabla
-     * @param item Objeto a guardar
-     */
-    static async save(tbName: string, item: DynamoDBItem): Promise<void> {
-        console.log("Guardando en la tabla DynamoDB:", tbName);
-        const command = new PutCommand({ TableName: tbName, Item: item });
-        await dynamoDB.send(command);
+export class DB implements Database {
+    private CACHE_DURATION = 30 * 60; // ⏳ 30 minutos
+
+    async save(tableName: string, data: Record<string, any>): Promise<void> {
+        console.log(`💾 Guardando en DynamoDB: ${tableName}`);
+        await dynamoDB.send(new PutCommand({ TableName: tableName, Item: data }));
+    }
+    
+    async all(tableName: string): Promise<Record<string, any>[]> {
+        console.log(`🔍 Escaneando tabla: ${tableName}`);
+        const response = await dynamoDB.send(new ScanCommand({ TableName: tableName }));
+        return response.Items || [];
     }
 
-    /**
-     * Obtiene todos los ítems de una tabla de DynamoDB.
-     * @param tbName Nombre de la tabla
-     * @returns Array de objetos obtenidos
-     */
-    static async all(tbName: string): Promise<DynamoDBItem[]> {
-        console.log("Consultando tabla DynamoDB:", tbName);
-        const command = new ScanCommand({ TableName: tbName });
-        const result = await dynamoDB.send(command);
-        return result.Items ?? [];
+    async getCache(tableName: string, cacheKey: string): Promise<Record<string, any> | null> {
+        console.log(`🔎 Buscando en caché: ${cacheKey}`);
+        const now = Math.floor(Date.now() / 1000);
+
+        const cacheResult = await dynamoDB.send(new GetCommand({
+            TableName: tableName,
+            Key: { id: cacheKey }
+        }));
+
+        if (cacheResult.Item && cacheResult.Item.expiresAt > now) {
+            console.log("📌 Caché válido encontrado");
+            return cacheResult.Item.data;
+        }
+
+        console.log("⚠️ Caché expirado o no encontrado");
+        return null;
+    }
+
+    async setCache(tableName: string, cacheKey: string, data: any): Promise<void> {
+        console.log(`💾 Guardando en caché: ${cacheKey}`);
+        const now = Math.floor(Date.now() / 1000);
+
+        await dynamoDB.send(new PutCommand({
+            TableName: tableName,
+            Item: {
+                id: cacheKey,
+                data: data,
+                expiresAt: now + this.CACHE_DURATION, // ⏳ Expira en 30 min
+            }
+        }));
+    }
+
+    async deleteCache(tableName: string, cacheKey: string): Promise<void> {
+        console.log(`🗑 Eliminando caché: ${cacheKey}`);
+        await dynamoDB.send(new DeleteCommand({ TableName: tableName, Key: { id: cacheKey } }));
     }
 }

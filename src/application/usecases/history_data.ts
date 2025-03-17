@@ -1,27 +1,29 @@
+import { randomUUID } from "crypto"; // Importa `randomUUID` para generar IDs únicos si faltan
+import { DB } from "../../infrastructure/database/db";
+
 interface HistoryItem {
     id: string;
-    timestamp: string; // o Date si prefieres
-    [key: string]: any; // Permite propiedades adicionales
+    timestamp: string;
+    [key: string]: any;
 }
 
 class HistoryData {
-    private db: { all: (tableName: string) => Promise<Record<string, any>[]> };
+    private db: DB; // Ahora recibe una instancia de DB
 
-    constructor(db: { all: (tableName: string) => Promise<Record<string, any>[]> }) {
+    constructor(db: DB) {
         this.db = db;
     }
 
     async execute(tableName: string): Promise<HistoryItem[]> {
         const items = await this.db.all(tableName);
 
-        // Asegurar que cada item tenga 'timestamp'
-        const historyItems: HistoryItem[] = items.map(item => ({
-            id: item.id || "", // Manejar ID opcionalmente
-            timestamp: item.timestamp || new Date().toISOString(), // Asegurar timestamp
-            ...item
-        }));
-
-        return historyItems.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        return items
+            .map(item => ({
+                id: item.id || randomUUID(), // Generar un ID si no existe
+                timestamp: item.timestamp || new Date().toISOString(), // Asegurar timestamp
+                ...item
+            }))
+            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()); // Ordenar por fecha descendente
     }
 }
 
