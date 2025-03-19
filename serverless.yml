@@ -8,13 +8,15 @@ provider:
   stage: v1  # ✅ Cambia el stage de "dev" a "v1"
   environment:
     DYNAMODB_TABLE: FusionadosData
+    API_GATEWAY_ID: ghu9xfcyr0 # Reemplázalo con el ID real
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:PutItem
         - dynamodb:GetItem
-      Resource: "arn:aws:dynamodb:us-west-2:123456789012:table/FusionadosData"
+      Resource: "arn:aws:dynamodb:us-west-2:*:table/FusionadosData"
 
 functions:
   swagger:
@@ -43,6 +45,13 @@ functions:
       - http:
           path: almacenar
           method: post
+          integration: lambda
+          request:
+            template:
+              application/json: |
+                {
+                  "body": $input.json('$')
+                }
 
   historial:
     handler: src/handler.historial

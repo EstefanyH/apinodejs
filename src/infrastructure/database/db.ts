@@ -13,13 +13,14 @@ export interface Database {
 }
 
 // Configurar cliente DynamoDB
-const client = new DynamoDBClient({
+/*const client = new DynamoDBClient({
     region: process.env.AWS_REGION as string,
     credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string
     }
-});
+});*/
+const client = new DynamoDBClient({ region:  "us-west-2" });
 
 const dynamoDB = DynamoDBDocumentClient.from(client);
 
@@ -33,8 +34,17 @@ export class DB implements Database {
     
     async all(tableName: string): Promise<Record<string, any>[]> {
         console.log(`🔍 Escaneando tabla: ${tableName}`);
-        const response = await dynamoDB.send(new ScanCommand({ TableName: tableName }));
-        return response.Items || [];
+        try {
+            const response = await dynamoDB.send(new ScanCommand({ TableName: tableName }));
+            console.log(`✅ Datos obtenidos de ${tableName}:`, response.Items);
+            return response.Items || [];
+        } catch (error: any) {
+            console.error("❌ Error al escanear la tabla:", error);
+            if (error.name === "UnrecognizedClientException") {
+                console.error("⚠️ Revisa tus credenciales de AWS. Ejecuta 'aws configure' para configurarlas.");
+            }
+            throw new Error("Error al obtener datos de DynamoDB");
+        }
     }
 
     async getCache(tableName: string, cacheKey: string): Promise<Record<string, any> | null> {

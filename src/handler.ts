@@ -44,6 +44,26 @@ export const fusionados = async (event: APIGatewayEvent): Promise<APIGatewayProx
  *         description: Datos almacenados correctamente.
  */
 export const almacenar = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+  console.log("📩 Evento recibido COMPLETO:", JSON.stringify(event, null, 2));
+  /*
+  const rawBody = event.body || event;
+  let parsedBody;  
+  try {
+    parsedBody = typeof rawBody === "string" ? JSON.parse(rawBody) : rawBody;
+  } catch (error) {
+    console.error("❌ Error al parsear el body:", error);
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "Error al procesar el body de la petición" }),
+    };
+  }
+
+  console.log("✅ Body parseado correctamente:", parsedBody); */
+  /*
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: "Body recibido correctamente", data: parsedBody }),
+  };*/
   return storageController.almacenar(event);
 };
 

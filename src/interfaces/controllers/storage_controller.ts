@@ -15,11 +15,28 @@ export class StorageController {
     
     async almacenar(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
         try {
-            if (!event.body) {
+
+            const rawBody = event.body || event;
+            /*try {
+            parsedBody = typeof rawBody === "string" ? JSON.parse(rawBody) : rawBody;
+            } catch (error) {
+            console.error("❌ Error al parsear el body:", error);
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "Error al procesar el body de la petición" }),
+            };
+            } */
+            
+            console.log("✅ Datos event:", event);
+            console.log("✅ Datos event body:", event.body);
+            console.log("✅ Datos rawBody", rawBody);
+            
+            var test = rawBody.toString().length == 0;
+            if (test) {
                 return { statusCode: 400, body: JSON.stringify({ error: "Datos requeridos" }) };
             }
 
-            const body = JSON.parse(event.body);
+            let body = typeof rawBody === "string" ? JSON.parse(rawBody) : rawBody;
 
             if (Object.keys(body).length === 0) {
                 return { statusCode: 400, body: JSON.stringify({ error: "El cuerpo de la solicitud no puede estar vacío" }) };
