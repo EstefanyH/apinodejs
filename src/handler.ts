@@ -1,14 +1,17 @@
 import dotenv from "dotenv";
+
+dotenv.config();
+
+import serverless from "serverless-http";
+import app from "./server";
+
 import FusionController from "../src/interfaces/controllers/fusion_controller";
 import { StorageController } from "../src/interfaces/controllers/storage_controller";
 import { HistoryController } from "../src/interfaces/controllers/history_controller";
 import { SwapiService } from "../src/infrastructure/services/swapi_services";
 import { WeatherService } from "../src/infrastructure/services/weather_services";
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
-import serverless from "serverless-http";
-import app from "./server";
 
-dotenv.config();
 
 const swapiService = new SwapiService();
 const weatherService = new WeatherService();
@@ -58,14 +61,9 @@ export const historial = async (event: APIGatewayEvent): Promise<APIGatewayProxy
   return historyController.historial(event);
 };
 
-/**
- * @swagger
- * /api-docs:
- *   get:
- *     summary: Accede a Swagger UI.
- *     description: Devuelve la documentación Swagger en una interfaz gráfica.
- *     responses:
- *       200:
- *         description: Página de Swagger UI.
- */
-export const swaggerUI = serverless(app);
+export const appHandler = serverless(app);
+
+export const swagger = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+  const response = (await appHandler(event, {})) as APIGatewayProxyResult; // 👈 Cast explícito
+  return response;
+};

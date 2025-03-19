@@ -1,23 +1,27 @@
 import express from "express";
-import cors from "cors"; // Asegurar compatibilidad con CORS
+import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./docs/swagger";
 
 const app = express();
+app.use(cors());
 
-app.use(cors()); // Habilitar CORS
+const basePath = "/v1"; // 🔥 Forzar el prefijo sin modificar serverless.yml
 
-// Ruta para ver Swagger UI en el navegador
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// 👇 Forzar el tipo para evitar el error en TypeScript
+(swaggerSpec as Record<string, any>).servers = [{ url: "/v1" }];
 
-// Ruta para obtener el JSON de Swagger (para verificar que Swagger está bien generado)
-app.get("/swagger.json", (req, res) => {
+app.use(
+  `/api-docs`, 
+  swaggerUi.serve, 
+  swaggerUi.setup(swaggerSpec, { explorer: true })
+);
+
+app.get(
+  `/swagger.json`, (req, res) => {
   res.json(swaggerSpec);
 });
-
-// Endpoint de prueba
-app.get("/", (req, res) => {
-  res.send("Servidor Express con Swagger UI funcionando 🚀");
-});
+console.log(`Swagger UI disponible en http://localhost:3000${basePath}/api-docs`);
+console.log(`Swagger JSON disponible en http://localhost:3000${basePath}/swagger.json`);
 
 export default app;

@@ -5,6 +5,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: us-west-2
+  stage: v1  # ✅ Cambia el stage de "dev" a "v1"
   environment:
     DYNAMODB_TABLE: FusionadosData
   iamRoleStatements:
@@ -16,32 +17,38 @@ provider:
       Resource: "arn:aws:dynamodb:us-west-2:123456789012:table/FusionadosData"
 
 functions:
+  swagger:
+    handler: src/handler.appHandler
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+          cors: true
+
+      - http:
+          path: swagger.json
+          method: get
+          cors: true
+
   fusionados:
     handler: src/handler.fusionados
     events:
       - http:
-          path: /fusionados
+          path: fusionados
           method: get
 
   almacenar:
     handler: src/handler.almacenar
     events:
       - http:
-          path: /almacenar
+          path: almacenar
           method: post
 
   historial:
     handler: src/handler.historial
     events:
       - http:
-          path: /historial
-          method: get
-
-  swagger:
-    handler: src/handler.swaggerUI
-    events:
-      - http:
-          path: api-docs
+          path: historial
           method: get
 
 resources:
@@ -52,8 +59,6 @@ resources:
         TableName: FusionadosData
         AttributeDefinitions:
           - AttributeName: id
-            AttributeType: S
-          - AttributeName: cacheKey
             AttributeType: S
         KeySchema:
           - AttributeName: id
@@ -75,12 +80,10 @@ custom:
     sourcemap: true
   autoswagger:
     title: "API Fusionados"
-    basePath: "/dev"
+    basePath: "/v1"  # ✅ Actualiza el prefijo en la documentación Swagger
     host: "http://localhost:3000"
-    generateSwaggerOnDeploy: true
-    schemes:
-      - http
+    #generateSwaggerOnDeploy: true
+    schemes: ["http"]
   serverless-offline:
     httpPort: 3000
-    lambdaPort: 3002
     host: 0.0.0.0

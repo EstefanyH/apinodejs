@@ -1,5 +1,7 @@
 import swaggerJsdoc from "swagger-jsdoc";
 
+const stage ="v1"; // ✅ Usar "v1" como prefijo
+ 
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -10,16 +12,16 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Servidor Local",
+        url: `http://localhost:3000/${stage}`,  // ✅ Prefijo correcto para Serverless Offline
+        description: "Servidor Local con Serverless Offline",
       },
       {
-        url: "https://{your-api-gateway-id}.execute-api.{region}.amazonaws.com/dev",
+        url:  `https://{your-api-gateway-id}.execute-api.{region}.amazonaws.com/${stage}`,
         description: "API Gateway en AWS",
       },
     ],
   },
-  apis: ["./src/handlers.ts"], // 📌 Revisa que la ruta sea correcta
+  apis: ["./src/handler.ts"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
