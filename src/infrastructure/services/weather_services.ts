@@ -37,7 +37,13 @@ export class WeatherService {
             return response.data.current as WeatherResponse;
 
         } catch (error: any) {
-            return { error: `Error al obtener datos meteorológicos: ${error.message}` };
+            //return { error: `Error al obtener datos meteorológicos: ${error.message}` };
+            if (error.response?.data?.error?.code === 1006) {
+                return { error: `No se encontró información meteorológica para "${planetName}"` };
+            }
+
+            // 🔥 Lanzar un error en lugar de devolver un objeto
+            throw new Error(`Error al obtener los datos meteorológicos para "${planetName}": ${error.message || 'Error desconocido'}`);
         }
     }
 }

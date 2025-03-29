@@ -4,16 +4,16 @@ import { WeatherService } from '../../infrastructure/services/weather_services';
 
 describe('WeatherService', () => {
     beforeEach(() => {
-        jest.restoreAllMocks(); // Limpia los mocks antes de cada prueba
-        jest.spyOn(console, 'warn').mockImplementation(() => {}); // Silencia los warnings
-        jest.spyOn(console, 'error').mockImplementation(() => {}); // Silencia los errores
+        jest.restoreAllMocks(); // Restablece todos los mocks antes de cada prueba
+        jest.clearAllMocks();   // Asegura que no queden llamadas previas
+        jest.spyOn(console, 'warn').mockImplementation(() => {}); // Silencia warnings
+        jest.spyOn(console, 'error').mockImplementation(() => {}); // Silencia errores
     });
 
     it('debería obtener los datos meteorológicos', async () => {
-        // Mockeamos axios.get usando jest.spyOn
         const mockGet = jest.spyOn(axios, 'get').mockResolvedValueOnce({
             data: { current: { temp_c: 25, condition: { text: 'Sunny' } } }
-        } as any); // Se usa `as any` para evitar conflictos de tipo
+        } as any);
 
         const service = new WeatherService();
         const data = await service.getWeatherData('London');
@@ -41,7 +41,7 @@ describe('WeatherService', () => {
         const service = new WeatherService();
 
         await expect(service.getWeatherData('UnknownCity'))
-            .rejects.toThrow('Error al obtener los datos meteorológicos para "UnknownCity"');
+            .rejects.toThrow('Error al obtener los datos meteorológicos para "UnknownCity": Error desconocido');
 
         expect(mockGet).toHaveBeenCalledTimes(1);
     });
